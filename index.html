@@ -72,7 +72,7 @@ body{
   background:var(--bg);
   height:100vh;
   overflow-y:auto;
-  padding:0 0 40px;
+  padding:0 0 16px;
   overflow-y:auto;
 }
 .menu-panel-header{
@@ -99,6 +99,19 @@ body{
   background:var(--card);border:1px solid var(--border);
   border-radius:8px;margin-bottom:6px;
   cursor:pointer;text-decoration:none;color:var(--text);
+}
+a.int-link{
+  color:var(--gold);
+  text-decoration:underline;
+  text-decoration-color:rgba(200,168,75,0.4);
+  text-underline-offset:2px;
+  cursor:pointer;
+  font-style:inherit;
+  font-weight:inherit;
+}
+a.int-link:hover{
+  text-decoration-color:var(--gold);
+}
   transition:background .15s;
   -webkit-tap-highlight-color:transparent;
 }
@@ -203,7 +216,7 @@ body{
 .phil-card{
   display:flex;align-items:flex-start;gap:12px;
   padding:13px 14px;
-  background:var(--card);border:1px solid var(--border);
+  background:var(--bg);border:1px solid rgba(200,168,75,0.15);
   border-radius:8px;margin-bottom:6px;
 }
 .phil-num{
@@ -254,7 +267,7 @@ body{
   gap:5px;margin-bottom:18px;
 }
 .aud-tag{
-  background:var(--card);border:1px solid var(--border);
+  background:var(--bg);border:1px solid rgba(200,168,75,0.15);
   border-radius:6px;padding:9px 11px;
   font-size:11.5px;font-weight:400;color:var(--text2);
   display:flex;align-items:center;gap:7px;
@@ -512,28 +525,28 @@ body{
   <div class="sub-label" style="margin-top:0">Φιλοσοφία</div>
 
   <div class="phil-card">
-    <div class="phil-num">I</div>
+    <div class="phil-num">1</div>
     <div>
       <div class="phil-title">Τι είναι αυτό το Manual</div>
       <div class="phil-desc">Ολοκληρωμένο εγχειρίδιο εκπαίδευσης προσωπικού για τον χώρο της φιλοξενίας.</div>
     </div>
   </div>
   <div class="phil-card">
-    <div class="phil-num">II</div>
+    <div class="phil-num">2</div>
     <div>
       <div class="phil-title">Επαγγελματισμός πάνω από όλα</div>
       <div class="phil-desc">Η στάση σου πίσω από τη μπάρα είναι το παν — η τεχνική έρχεται δεύτερη.</div>
     </div>
   </div>
   <div class="phil-card">
-    <div class="phil-num">III</div>
+    <div class="phil-num">3</div>
     <div>
       <div class="phil-title">Συνέπεια είναι η τελειότητα</div>
       <div class="phil-desc">Κάθε cocktail πρέπει να είναι ίδιο κάθε φορά — αυτό είναι το πραγματικό επίπεδο.</div>
     </div>
   </div>
   <div class="phil-card">
-    <div class="phil-num">IV</div>
+    <div class="phil-num">4</div>
     <div>
       <div class="phil-title">Clean As You Go</div>
       <div class="phil-desc">Η τάξη πίσω από τη μπάρα είναι μη διαπραγματεύσιμη.</div>
@@ -3992,20 +4005,150 @@ function goTo(id){
 
 </section>
 
-<div style="height:64px"></div>
-
 <script>
-// Smart image fallback: if .png fails try .jpg and vice versa
-document.querySelectorAll('img[src^="images/"]').forEach(function(img) {
-  img.addEventListener('error', function() {
-    var src = this.src;
-    if (src.endsWith('.png')) {
-      this.src = src.replace(/\.png$/, '.jpg');
-    } else if (src.endsWith('.jpg')) {
-      this.src = src.replace(/\.jpg$/, '.png');
-    }
-  }, { once: true });
-});
+// ── INTERNAL LINK DICTIONARY ──────────────────────────────
+const TERMS = {
+  // Equipment
+  'Boston Shaker':    't-shaker',
+  'Boston shaker':    't-shaker',
+  'shaker':           't-shaker',
+  'Shaker':           't-shaker',
+  'Mixing Glass':     't-mixingglass',
+  'mixing glass':     't-mixingglass',
+  'jigger':           't-jigger',
+  'Jigger':           't-jigger',
+  'Bar Spoon':        't-barspoon',
+  'bar spoon':        't-barspoon',
+  'Hawthorne':        't-strainer',
+  'strainer':         't-strainer',
+  'Strainer':         't-strainer',
+  'fine strainer':    't-finestrainer',
+  'Fine Strainer':    't-finestrainer',
+  'double strain':    't-finestrainer',
+  'muddler':          't-muddler',
+  'Muddler':          't-muddler',
+  'peeler':           't-peeler',
+  'Peeler':           't-peeler',
+  'speed pourers':    't-pourers',
+  'Speed Pourers':    't-pourers',
+  'blender':          't-blender',
+  'Blender':          't-blender',
+  // Glassware
+  'Shot Glass':       'g-shot',
+  'shot glass':       'g-shot',
+  'Rocks Glass':      'g-rocks',
+  'rocks glass':      'g-rocks',
+  'Highball':         'g-highball',
+  'highball':         'g-highball',
+  'Collins':          'g-collins',
+  'Martini Glass':    'g-martini',
+  'martini glass':    'g-martini',
+  'Coupe':            'g-coupe',
+  'coupe':            'g-coupe',
+  'Wine Glass':       'g-wine',
+  'Champagne Flute':  'g-flute',
+  'Hurricane':        'g-hurricane',
+  'Margarita Glass':  'g-margarita',
+  'Tiki Mug':         'g-tiki',
+  'Copper Mug':       'g-mulemug',
+  'Pint Glass':       'g-pint',
+  'Snifter':          'g-snifter',
+  // Ice
+  'crushed ice':      'i-crushed',
+  'Crushed Ice':      'i-crushed',
+  'large ice':        'i-large',
+  // Techniques
+  'shake':            't-shake',
+  'Shake':            't-shake',
+  'dry shake':        't-dryshake',
+  'Dry Shake':        't-dryshake',
+  'reverse dry shake':'t-reversedryshake',
+  'stir':             't-stir',
+  'Stir':             't-stir',
+  'build':            't-build',
+  'Build':            't-build',
+  'muddle':           't-muddle',
+  'Muddle':           't-muddle',
+  'layer':            't-layer',
+  'Layer':            't-layer',
+  // Spirits
+  'Gin':              's-gin',
+  'Vodka':            's-vodka',
+  'Rum':              's-rum',
+  'Tequila':          's-tequila',
+  'Whiskey':          's-whiskey',
+  'Brandy':           's-brandy',
+  'Vermouth':         's-sweetvermouth',
+  'Bitters':          's-bitters',
+  // Cocktails
+  'Mojito':           'c-mojito',
+  'Old Fashioned':    'c-oldfashioned',
+  'Negroni':          'c-negroni',
+  'Margarita':        'c-margarita',
+  'Piña Colada':      'c-pinacolada',
+  'Zombie':           'c-zombie',
+  'Daiquiri':         'c-daiquiri',
+  'Whiskey Sour':     'c-whiskeysour',
+  'Moscow Mule':      'c-moscowmule',
+  'Bloody Mary':      'c-bloodymary',
+  'Cosmopolitan':     'c-cosmopolitan',
+  'Caipirinha':       'c-caipirinha',
+  'Mai Tai':          'c-maitai',
+  'Manhattan':        'c-manhattan',
+  'Long Island':      'c-longisland',
+  'Espresso Martini': 'c-espressomartini',
+  'Tom Collins':      'c-tomcollins',
+  'Aperol Spritz':    'c-aperolspritz',
+  'Dry Martini':      'c-drymartini',
+  'Gin Tonic':        'c-gintonic',
+  // Mocktails
+  'Virgin Mojito':    'm-virginmojito',
+  'Virgin Piña':      'm-virginpina',
+  'Shirley Temple':   'm-shirley',
+  'Ipanema':          'm-ipanema',
+  'Nojito':           'm-nojito',
+};
+
+function navigateTo(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  // Open accordion if needed
+  if (el.classList.contains('acc-item') && !el.classList.contains('open')) {
+    el.classList.add('open');
+  }
+  setTimeout(() => {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
+}
+
+function applyInternalLinks() {
+  // Sort by length descending to match longer terms first
+  const sorted = Object.keys(TERMS).sort((a,b) => b.length - a.length);
+
+  // Only process text nodes inside acc-body and acc-desc elements
+  const containers = document.querySelectorAll('.acc-desc, .acc-body p, .warn-box, .tip-box, .rule-list, .exec-t, .seq-desc, .ch-desc');
+
+  containers.forEach(container => {
+    // Skip if already processed
+    if (container.dataset.linked) return;
+    container.dataset.linked = '1';
+
+    let html = container.innerHTML;
+    sorted.forEach(term => {
+      const id = TERMS[term];
+      // Don't link if we're inside the element that defines this term
+      const parentAcc = container.closest('.acc-item');
+      if (parentAcc && parentAcc.id === id) return;
+      // Replace term with link (avoid re-linking already linked text)
+      const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(?<!<[^>]*)\\b(${escaped})\\b(?![^<]*>)`, 'g');
+      html = html.replace(regex, `<a class="int-link" onclick="navigateTo('${id}')" href="javascript:void(0)">$1</a>`);
+    });
+    container.innerHTML = html;
+  });
+}
+
+document.addEventListener('DOMContentLoaded', applyInternalLinks);
 </script>
 
 </body>
